@@ -20,7 +20,8 @@ Clone this repository and build the ROS 2 workspace:
 ```bash
 git clone https://github.com/zunedrones/tello_ros.git
 cd tello_ros/ros2_ws
-rosdep install --from-paths src --ignore-src -r -y
+python3 -m pip install --user tello-zune
+rosdep install --from-paths src --ignore-src --skip-keys=tello-zune -r -y
 colcon build --symlink-install
 source install/setup.bash
 ```
@@ -32,9 +33,34 @@ source /opt/ros/humble/setup.bash
 source /path/to/tello_ros/ros2_ws/install/setup.bash
 ```
 
-If `rosdep` does not resolve `tello-zune` on your system, install the Python
-package that provides the `tello_zune` module in the same Python environment
-used by ROS 2.
+## Run with Docker
+
+Docker Compose provides a ROS 2 Humble environment with the camera bridge
+dependencies. Host networking is enabled so the container can communicate
+with the Tello over the host's Wi-Fi connection.
+
+Build and start the container from the repository root:
+
+```bash
+docker compose build
+docker compose up -d
+docker compose exec tello-ros bash
+```
+
+Inside the container, build the workspace and source its setup:
+
+```bash
+cd /home/dev/ros2_ws
+rosdep install --from-paths src --ignore-src --skip-keys=tello-zune -r -y
+colcon build --symlink-install
+source install/setup.bash
+```
+
+The Docker image installs `tello-zune`. Connect the host computer to the Tello
+Wi-Fi before starting the node, then run `ros2 run tello-ros2 camera_pub` in
+the container. Use a second container shell (`docker compose exec tello-ros
+bash`) to inspect or record `/tello/camera` using the commands below. Recorded
+bags are available on the host under `bags/`.
 
 ## Capture and view the Tello image
 
