@@ -1,0 +1,12 @@
+# ROS 2 / colcon build outputs
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+
+# Local recordings are large and should not be committed
+bags/*
+!bags/README.md
