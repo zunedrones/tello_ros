@@ -37,7 +37,11 @@ RUN groupadd --gid $USER_GID $USERNAME \
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
-RUN python3 -m pip install --user --no-cache-dir tello-zune
+# tello-zune pulls opencv-python + numpy>=2, which break Humble cv_bridge
+# (compiled against NumPy 1.x / distro OpenCV). Use apt OpenCV instead.
+RUN python3 -m pip install --user --no-cache-dir --no-deps tello-zune \
+    && python3 -m pip install --user --no-cache-dir 'numpy<2' \
+    && python3 -m pip uninstall -y opencv-python opencv-contrib-python opencv-python-headless || true
 
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
